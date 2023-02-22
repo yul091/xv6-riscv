@@ -131,7 +131,9 @@ uint64
 sys_sched_tickets(void) //lab2
 {
   int tickets;
+  // int ticks;
   argint(0, &tickets);
+  // argint(0, &ticks);
   sched_tickets(tickets);
   return 0;
 }

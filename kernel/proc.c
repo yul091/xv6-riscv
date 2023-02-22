@@ -756,16 +756,25 @@ int procinfo(struct pinfo *in)
 int sched_statistics(void)
 {
   struct proc * p = myproc();
-  printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+  // acquire(&p->lock);
+  for(p = proc; p < &proc[NPROC]; p++) {
+    if(p->state != UNUSED)
+      printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+  }
+  // printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+  // release(&p->lock);
+  return 0;
 }
 
 // This system call sets the caller process’s ticket value to the given parameter.
 int sched_tickets(int tickets)
 {
   struct proc * p = myproc();
+  // acquire(&p->lock);
   p->tickets = tickets;
+  // release(&p->lock);
+  return 0;
 }
-
 
 
 
