@@ -93,6 +93,10 @@ struct proc {
   int pid;                     // Process ID
   int tickets;                 // Number of tickets for lottery scheduler
   int ticks;                   // Number of time slices for lottery scheduler
+  #ifdef STRIDE
+  int stride;                  // Stride for stride scheduler
+  int pass;                    // Pass for stride scheduler
+  #endif
 
   // wait_lock must be held when using this:
   struct proc *parent;         // Parent process

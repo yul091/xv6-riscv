@@ -132,6 +132,11 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  p->tickets = 60; //default tickets
+  #ifdef STRIDE
+  p->stride = 10000/p->tickets; //default stride
+  p->pass = 0;
+  #endif
 
   systemcall_count[p->pid] = 0; //reset system call to zero for new process
 
@@ -463,6 +468,70 @@ scheduler(void)
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
+    // Do lottery scheduling
+    #ifdef LOTTERY
+    // Get total number of tickets
+    int total_tickets = 0;
+    for(p = proc; p < &proc[NPROC]; p++){
+      acquire(&p->lock);
+      if(p->state == RUNNABLE){
+        total_tickets += p->tickets;
+      }
+      release(&p->lock);
+    }
+    int winner = 1 + ((int)rand() % total_tickets);
+    int current = 0;
+    // Find the scheduled process
+    for(p = proc; p < &proc[NPROC]; p++){
+      acquire(&p->lock);
+      if (p->state != RUNNABLE) {
+        release(&p->lock);
+        continue;
+      }
+      current += p->tickets;
+      if(current < winner){
+        release(&p->lock);
+        continue;
+      }
+      p->state = RUNNING;
+      c->proc = p;
+      p->ticks += 1; // Increment ticks
+      swtch(&c->context, &p->context);
+      c->proc = 0;
+      release(&p->lock);
+      break;
+    }
+    #endif 
+
+    #ifdef STRIDE
+    // Do stride scheduling
+    int current = 100000;
+    struct proc *chosen = proc; // Pointer to the chosen process
+    // Find the scheduled process
+    for(p = proc; p < &proc[NPROC]; p++){
+      acquire(&p->lock);
+      if (p->state != RUNNABLE) {
+        release(&p->lock);
+        continue;
+      }
+      if (p->pass < current) {
+        current = p->pass;
+        chosen = p;
+      }
+      release(&p->lock);
+    }
+    acquire(&chosen->lock);
+    chosen->state = RUNNING;
+    c->proc = chosen;
+    chosen->ticks += 1; // Increment ticks
+    chosen->pass += chosen->stride; // Increment pass
+    swtch(&c->context, &chosen->context);
+    c->proc = 0;
+    release(&chosen->lock);
+    #endif
+
+    #ifdef RR
+    // Do round robin scheduling
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
@@ -479,6 +548,7 @@ scheduler(void)
       }
       release(&p->lock);
     }
+    #endif
   }
 }
 
@@ -758,10 +828,18 @@ int sched_statistics(void)
   struct proc * p = myproc();
   // acquire(&p->lock);
   for(p = proc; p < &proc[NPROC]; p++) {
-    if(p->state != UNUSED)
-      printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+    if(p->state != UNUSED) 
+    {
+      if(p->tickets != 60) // child process  
+      {
+        printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+      }
+      if (p->tickets == 60) // parent process
+      {
+        printf("%d(%s): tickets: xxx, ticks: %d\n", p->pid, p->name, p->ticks);
+      }
+    }
   }
-  // printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
   // release(&p->lock);
   return 0;
 }
@@ -772,9 +850,19 @@ int sched_tickets(int tickets)
   struct proc * p = myproc();
   // acquire(&p->lock);
   p->tickets = tickets;
+  #ifdef STRIDE
+  p->stride = 10000/tickets;
+  #endif
   // release(&p->lock);
   return 0;
 }
 
 
-
+// Define a random number generator
+unsigned short lfsr = 0xACE1u;
+unsigned short bit;
+unsigned short rand(void)
+{
+  bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1;
+  return lfsr = (lfsr >> 1) | (bit << 15);
+}

@@ -114,6 +114,7 @@ extern uint     systemcallcount;
 int             procinfo(struct pinfo*); //lab1
 int             sched_statistics(void); //lab2
 int             sched_tickets(int); //lab2
+unsigned short  rand(void); //lab2
 
 // swtch.S
 void            swtch(struct context*, struct context*);
