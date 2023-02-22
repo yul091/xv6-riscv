@@ -832,7 +832,8 @@ int sched_statistics(void)
     {
       if(p->tickets != 60) // child process  
       {
-        printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+        printf("%d(%s): tickets: %d, ticks: %d\n", 
+        p->pid, p->name, p->tickets, p->ticks);
       }
       if (p->tickets == 60) // parent process
       {
