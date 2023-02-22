@@ -102,8 +102,10 @@ extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
 extern uint64 sys_hello(void);
-extern uint64 sys_info(void);
-extern uint64 sys_procinfo(void);
+extern uint64 sys_info(void); //lab1 
+extern uint64 sys_procinfo(void); //lab1
+extern uint64 sys_sched_statistics(void); //lab2
+extern uint64 sys_sched_tickets(void); //lab2
 uint systemcallcount;
 
 // An array mapping syscall numbers from syscall.h
@@ -131,8 +133,10 @@ static uint64 (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_hello]   sys_hello,
-[SYS_sysinfo] sys_info,
-[SYS_procinfo] sys_procinfo,
+[SYS_sysinfo] sys_info, // lab1
+[SYS_procinfo] sys_procinfo, // lab1
+[SYS_sched_statistics] sys_sched_statistics, // lab2
+[SYS_sched_tickets] sys_sched_tickets, // lab2
 };
 
 void

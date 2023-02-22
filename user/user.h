@@ -24,8 +24,10 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int hello(void);
-int sysinfo(int);
-int procinfo(struct pinfo*);
+int sysinfo(int); //lab1
+int procinfo(struct pinfo*); //lab1
+int sched_statistics(void); //lab2
+int sched_tickets(int); //lab2
 
 // ulib.c
 int stat(const char*, struct stat*);

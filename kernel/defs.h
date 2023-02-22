@@ -109,9 +109,11 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 void            hello(void);
-int             sysinfo(int);
+int             sysinfo(int); //lab1
 extern uint     systemcallcount;
-int             procinfo(struct pinfo*);
+int             procinfo(struct pinfo*); //lab1
+int             sched_statistics(void); //lab2
+int             sched_tickets(int); //lab2
 
 // swtch.S
 void            swtch(struct context*, struct context*);

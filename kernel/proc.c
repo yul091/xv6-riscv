@@ -748,3 +748,24 @@ int procinfo(struct pinfo *in)
   
   return 0;
 }
+
+
+// Lottery scheduler
+// This system call prints, for each process:
+// 1) PID, 2) name in a parenthesis, 3) ticket value, 4) time slices scheduled.
+int sched_statistics(void)
+{
+  struct proc * p = myproc();
+  printf("%d(%s): tickets: %d, ticks: %d\n", p->pid, p->name, p->tickets, p->ticks);
+}
+
+// This system call sets the caller process’s ticket value to the given parameter.
+int sched_tickets(int tickets)
+{
+  struct proc * p = myproc();
+  p->tickets = tickets;
+}
+
+
+
+

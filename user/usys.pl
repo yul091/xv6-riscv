@@ -37,5 +37,7 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("hello");
-entry("sysinfo");
-entry("procinfo");
+entry("sysinfo"); # lab1
+entry("procinfo"); # lab1
+entry("sched_statistics"); # lab2
+entry("sched_tickets"); # lab2

@@ -99,7 +99,7 @@ sys_hello(void)
 }
 
 uint64
-sys_info(void)
+sys_info(void) //lab1
 {
   int param;
   argint(0, &param);
@@ -108,7 +108,7 @@ sys_info(void)
 }
 
 uint64
-sys_procinfo(void)
+sys_procinfo(void) //lab1
 {
   uint64 addr;
 
@@ -116,4 +116,22 @@ sys_procinfo(void)
   struct pinfo* pi = (struct pinfo*)addr;
   
   return procinfo(pi);
+}
+
+
+uint64 
+sys_sched_statistics(void) //lab2
+{
+  sched_statistics();
+  return 0;
+}
+
+
+uint64 
+sys_sched_tickets(void) //lab2
+{
+  int tickets;
+  argint(0, &tickets);
+  sched_tickets(tickets);
+  return 0;
 }
